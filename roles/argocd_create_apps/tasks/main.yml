@@ -1,0 +1,47 @@
+---
+
+- name: Wait for argocd-server
+  shell:
+    cmd: oc get pods -n argocd -o custom-columns=status:.status.phase
+  register: result
+  until: result.stdout|regex_findall('Running')|length == 5
+  retries: 10
+  delay: 5
+
+- name: Get argocd creds
+  shell:
+    cmd: oc get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+  register: argocd_pass
+
+- name: Config argocd port-forward
+  shell:
+    cmd: ./kubectl port-forward --address 0.0.0.0 svc/argocd-server -n argocd 8080:443
+  poll: 0
+  async: 100000
+
+- name: Get argocd token
+  uri:
+    url: https://{{ argocd_server }}/api/v1/session
+    method: POST
+    body:
+      username: admin
+      password: "{{ argocd_pass.stdout }}"
+    body_format: json
+    validate_certs: false
+    return_content: yes
+  register: token_resp
+
+- name: Create argocd apps
+  shell:
+    cmd: argocd app create {{ item.name }}
+      --config-management-plugin {{ item.name }}
+      --repo {{ gitops_repo }}
+      --path {{ item.path }}
+      --dest-server https://kubernetes.default.svc
+      --dest-namespace default
+      --server {{ argocd_server }}
+      --auth-token {{ (token_resp.content | from_json).token }}
+      --sync-policy automated
+      --insecure
+  with_items:
+    - "{{ argocd_apps }}"

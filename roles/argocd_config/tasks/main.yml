@@ -1,0 +1,19 @@
+---
+
+- name: Generate config_plugins.yml
+  template:
+    src: vars/config_plugins_template.yml
+    dest: /tmp/config_plugins.yml
+  vars:
+    plugins: "{{ config_plugins }}"
+
+- name: Patch argocd-cm configmap
+  shell: oc -n argocd patch configmap argocd-cm -p "$(cat /tmp/config_plugins.yml)"
+
+- name: Copy custom_tools.yml file
+  copy:
+    src: vars/custom_tools.yml
+    dest: /tmp/custom_tools.yml
+
+- name: Patch argocd-repo-server deploy
+  shell: oc -n argocd patch deploy argocd-repo-server -p "$(cat /tmp/custom_tools.yml)"

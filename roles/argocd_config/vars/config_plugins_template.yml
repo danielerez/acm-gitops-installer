@@ -1,0 +1,8 @@
+data:
+  configManagementPlugins: |
+  {% for plugin in plugins %}
+  - name: {{ plugin.name }}
+      generate:
+        command: [sh, -c]
+        args: {{ plugin.args }}
+  {% endfor %}

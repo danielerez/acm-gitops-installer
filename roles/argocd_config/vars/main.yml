@@ -1,0 +1,9 @@
+config_plugins:
+  - name: kubevirt
+    args: ["cat *.yaml | ss view -w -s team=astonish -r . kubevirt"]
+  - name: openshift-kni
+    args: ["cd performance && kustomize build | ss view -s team=astonish -r . openshift-kni"]
+  - name: metrics
+    args: ["cat *.yaml | ss view -w -s team=astonish -r . metrics"]
+  - name: operatorhub
+    args: ["ss view -w -s team=astonish -p . operatorhub"]

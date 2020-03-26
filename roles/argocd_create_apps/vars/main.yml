@@ -1,0 +1,11 @@
+---
+
+argocd_apps:
+  - name: kubevirt
+    path: kubevirt
+  - name: metrics
+    path: metrics
+  - name: openshift-kni
+    path: openshift-kni
+  - name: operatorhub
+    path: operatorhub

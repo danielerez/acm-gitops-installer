@@ -1,0 +1,8 @@
+---
+
+- name: Create argocd namespace
+  shell: oc create namespace argocd
+  ignore_errors: yes
+
+- name: Install argocd
+  shell: oc apply -n argocd -f "{{ argocd_download_url }}"

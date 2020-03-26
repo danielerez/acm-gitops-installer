@@ -1,0 +1,12 @@
+---
+
+- name: Deploy Argo CD
+  hosts: hub
+  roles:
+    - argocd_install
+    - argocd_config
+
+- name: Create apps on argocd
+  hosts: hub
+  roles:
+    - argocd_create_apps

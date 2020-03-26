@@ -1,0 +1,3 @@
+gitops_repo: https://github.com/danielerez/acm-gitops
+argocd_download_url: https://raw.githubusercontent.com/argoproj/argo-cd/v1.5.0-rc2/manifests/install.yaml
+argocd_server: <address>:8080
